@@ -129,20 +129,3 @@ export default function Movies() {
     </main>
   )
 }
-
-export async function getStaticProps() {
-  const queryClient = new QueryClient()
-
-  // Prefetch the initial data
-  await queryClient.prefetchQuery({
-    queryKey: ["data", 1],
-    queryFn: async () => await axiosTemplate.get("movie/popular"),
-  }) // Fetch page 1
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient), // Dehydrate the query state
-    },
-    revalidate: 300, // Regenerate the page every 300 seconds
-  }
-}
