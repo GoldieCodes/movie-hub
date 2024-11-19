@@ -3,13 +3,14 @@
 @tailwind utilities;
 
 body {
-  font-family: var(--Outfit);
+  @apply font-outfit;
 }
-h1 {
-  font-family: var(--JosefinSans);
+h1,
+h2 {
+  @apply font-josefin-sans;
 }
 .logo {
-  font-family: var(--PTSans);
+  @apply font-pt-serif;
 }
 @keyframes gradient-border {
   0% {

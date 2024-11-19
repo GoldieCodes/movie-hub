@@ -7,7 +7,13 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        "pt-serif": ["var(--PTSerif)"],
+        outfit: ["var(--Outfit)"],
+        "josefin-sans": ["var(--JosefinSans)"],
+      },
+    },
   },
   plugins: [],
 } satisfies Config
