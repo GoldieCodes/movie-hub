@@ -1,101 +1,148 @@
-import Image from "next/image";
+"use client"
+import { useInfiniteQuery, QueryClient, dehydrate } from "@tanstack/react-query"
+import { PopularMoviesResponse } from "@/app/api_resources/interfaces"
+import axiosTemplate from "@/app/api_resources/config"
+import { ScaleLoader } from "react-spinners"
+import Image from "next/image"
+import Favorite from "@/app/components/Favorite"
+import Link from "next/link"
+import { useSearchMovies } from "./zustand/States"
+import { useEffect, useState } from "react"
+import { FaAnglesDown } from "react-icons/fa6"
 
-export default function Home() {
+export default function Movies() {
+  //inputValue is the controlled component value of the searchBar (which updates per character) while searchTerm is only updated onKeyPress = Enter
+  const { searchTerm, inputValue } = useSearchMovies()
+  const searchUrl = `/search/movie?query=${searchTerm}`
+  const [apiUrl, setUrl] = useState("movie/popular")
+
+  // this changes the api endpoint passed to the axiosTemplate function to either a search endpoint or the general one
+  useEffect(() => {
+    if (inputValue === "" || searchTerm === "") {
+      return setUrl("movie/popular")
+    }
+    return setUrl(searchUrl)
+  }, [searchTerm, inputValue])
+
+  const {
+    isLoading,
+    error,
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: [apiUrl, searchTerm],
+    queryFn: async ({ pageParam = 1 }): Promise<PopularMoviesResponse> => {
+      const response = await axiosTemplate.get(apiUrl, {
+        params: { page: pageParam },
+      })
+      return response.data
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      return lastPage.page < lastPage.total_pages
+        ? lastPage.page + 1
+        : undefined
+    },
+  })
+
+  const allData = data?.pages.map((page) => page.results)
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <ScaleLoader color="#3B82F6" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-red-500">
+        An error has occurred: {error.message}
+      </div>
+    )
+  }
+
+  // Function to construct TMDb image URL
+  const getImageUrl = (path: string, size = "w500") => {
+    return `https://image.tmdb.org/t/p/${size}${path}`
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {allData?.map((data) =>
+          data.map((movie) => (
+            <div
+              key={movie.id}
+              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+            >
+              <div className="relative h-48">
+                <Image
+                  src={getImageUrl(movie.backdrop_path)}
+                  alt={movie.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </div>
+              <div className="p-4">
+                <h2 className="text-xl cursor-pointer hover:text-blue-900 font-semibold mb-2 line-clamp-1">
+                  <Link href={`/${movie.id}/${movie.title.replace(" ", "_")}`}>
+                    {movie.title}
+                  </Link>
+                </h2>
+                <p className="text-gray-600 mb-2">
+                  Release date:{" "}
+                  {new Date(movie.release_date).toLocaleDateString()}
+                </p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="mr-1">Rating ✨: </span>
+                    <span className="font-bold">
+                      {movie.vote_average.toFixed(1)}
+                    </span>
+                  </div>
+                  <Favorite movie={movie} />
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+        {hasNextPage && (
+          <div className="my-4 mx-auto col-span-full">
+            <button
+              className="hover:text-blue-800 flex items-center gap-2 text-lg text-amber-900"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage ? "Loading..." : "Show More "}
+              <span className="animate-bounce self-end">
+                <FaAnglesDown />
+              </span>
+            </button>
+          </div>
+        )}
+      </div>
+    </main>
+  )
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+export async function getStaticProps() {
+  const queryClient = new QueryClient()
+
+  // Prefetch the initial data
+  await queryClient.prefetchQuery({
+    queryKey: ["data", 1],
+    queryFn: async () => await axiosTemplate.get("movie/popular"),
+  }) // Fetch page 1
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient), // Dehydrate the query state
+    },
+    revalidate: 300, // Regenerate the page every 300 seconds
+  }
 }
