@@ -77,14 +77,14 @@ export default function Movies() {
           data.map((movie) => (
             <div
               key={movie.id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
             >
               <div className="relative h-56">
                 <Image
                   src={getImageUrl(movie.backdrop_path)}
                   alt={movie.title}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-300 hover:scale-105"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
