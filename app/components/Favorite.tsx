@@ -14,7 +14,7 @@ export default function Favorite({ movie }: { movie: PopularMoviesData }) {
 
   return (
     <span
-      className="cursor-pointer text-[#f9c23c] text-xl"
+      className="cursor-pointer text-blue-700 text-xl"
       onClick={() => {
         if (favoriteMovie) removeFavoriteMovie(movie.id)
         else addToFavoritesArray(movie)

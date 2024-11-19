@@ -79,7 +79,7 @@ export default function Movies() {
               key={movie.id}
               className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
-              <div className="relative h-48">
+              <div className="relative h-56">
                 <Image
                   src={getImageUrl(movie.backdrop_path)}
                   alt={movie.title}
@@ -90,7 +90,11 @@ export default function Movies() {
               </div>
               <div className="p-4">
                 <h2 className="text-xl cursor-pointer hover:text-blue-900 font-semibold mb-2 line-clamp-1">
-                  <Link href={`/${movie.id}/${movie.title.replace(" ", "_")}`}>
+                  <Link
+                    href={`/${movie.id}/${movie.title
+                      .replace(" ", "_")
+                      .toLowerCase()}`}
+                  >
                     {movie.title}
                   </Link>
                 </h2>
@@ -114,7 +118,7 @@ export default function Movies() {
         {hasNextPage && (
           <div className="my-4 mx-auto col-span-full">
             <button
-              className="hover:text-blue-800 flex items-center gap-2 text-lg text-amber-900"
+              className="hover:text-blue-800 flex items-center gap-2 text-lg text-slate-500"
               onClick={() => fetchNextPage()}
               disabled={isFetchingNextPage}
             >

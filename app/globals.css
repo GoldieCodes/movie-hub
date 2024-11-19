@@ -11,3 +11,27 @@ h1 {
 .logo {
   font-family: var(--PTSans);
 }
+@keyframes gradient-border {
+  0% {
+    border-image-source: linear-gradient(90deg, #f0ecda, #ad97e1);
+  }
+  25% {
+    border-image-source: linear-gradient(200deg, #4d5acc, #e9ce47);
+  }
+  50% {
+    border-image-source: linear-gradient(90deg, #ad97e1, #3b6892);
+  }
+  75% {
+    border-image-source: linear-gradient(360deg, slategray, #f0ecda);
+  }
+  100% {
+    border-image-source: linear-gradient(50deg, #8a70c7, #f0ecda);
+  }
+}
+
+.gradient-ring:focus {
+  border-width: 2px; /* Adjust the border thickness as needed */
+  border-image-slice: 1;
+  border-radius: 200px;
+  animation: gradient-border 3s infinite; /* Adjust animation duration */
+}

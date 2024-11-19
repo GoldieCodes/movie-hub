@@ -5,7 +5,7 @@ import { RiMovie2Fill } from "react-icons/ri"
 
 export default function Nav() {
   return (
-    <header className="flex items-center justify-between gap-10 m-3 lg:m-6">
+    <header className="container mx-auto px-4 py-8 flex items-center justify-between gap-10">
       <h1 className="text-2xl text-blue-950 logo">
         <Link
           href="/"
@@ -19,9 +19,12 @@ export default function Nav() {
       <SearchBar />
       <Link
         href="/favorites"
-        className="hover:text-blue-900 flex items-center gap-2"
+        className="hover:text-blue-900 flex items-center gap-2 text-lg"
       >
-        <FaHeart /> Your Favorites
+        <span className="text-blue-800">
+          <FaHeart />
+        </span>{" "}
+        Your Favorites
       </Link>
     </header>
   )

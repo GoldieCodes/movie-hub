@@ -17,7 +17,7 @@ export default function SearchBar() {
       <input
         type="text"
         placeholder="Search movies..."
-        className="w-full border-[1px] border-gray-300 pl-10 pr-4 py-2 rounded-md bg-gray-100 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+        className="gradient-ring w-full border-[1px] border-gray-300 pl-10 pr-4 py-2 rounded-md bg-gray-100 focus:bg-white focus:outline-none transition-colors"
         value={inputValue}
         onChange={(e) => updateValue(e.target.value)}
         onKeyDown={(e) => getInputValue(e)}
