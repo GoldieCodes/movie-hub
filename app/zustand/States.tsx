@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { persist, createJSONStorage } from "zustand/middleware"
 import { PopularMoviesData } from "../api_resources/interfaces"
 
 // BELOW IS THE INTERFACE AND STATES FOR THE SEARCH MOVIES LOGIC
@@ -16,31 +17,36 @@ export const useSearchMovies = create<SearchState>((set) => ({
   updateValue: (value) => set({ inputValue: value }),
 }))
 
-// BELOW IS THE INTERFACE AND STATES FOR THE FAVORITE MOVIES PAGES AND LOGIC
+// Interface for the Favorite Movies Page
 interface FavoriteMovies {
   favoritesArray: PopularMoviesData[]
   addToFavoritesArray: (movie: PopularMoviesData) => void
   removeFavoriteMovie: (movieId: number) => void
-  setFavoritesArray: (array: PopularMoviesData[]) => void
 }
 
-export const useFavoriteMovies = create<FavoriteMovies>((set) => ({
-  favoritesArray: [],
-  addToFavoritesArray: (movie) =>
-    set((state) => {
-      // Check if the movie already exists in the favorites
-      if (!state.favoritesArray.some((fav) => fav.id === movie.id)) {
-        // Add the movie if it's not already in the array
-        return { favoritesArray: [...state.favoritesArray, movie] }
-      }
-      // Return unchanged state if the movie already exists
-      return state
+export const useFavoriteMovies = create<FavoriteMovies>()(
+  persist(
+    (set, get) => ({
+      favoritesArray: [],
+
+      addToFavoritesArray: (movie) => {
+        const currentFavorites = get().favoritesArray
+        if (!currentFavorites.some((fav) => fav.id === movie.id)) {
+          set({ favoritesArray: [...currentFavorites, movie] })
+        }
+      },
+
+      removeFavoriteMovie: (movieId) => {
+        set({
+          favoritesArray: get().favoritesArray.filter(
+            (movie) => movie.id !== movieId
+          ),
+        })
+      },
     }),
-  removeFavoriteMovie: (movieId: number) =>
-    set((state) => ({
-      favoritesArray: state.favoritesArray.filter(
-        (movie) => movie.id !== movieId
-      ),
-    })),
-  setFavoritesArray: (array) => set({ favoritesArray: array }),
-}))
+    {
+      name: "movieFavorites", // Unique name for localStorage key
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+)

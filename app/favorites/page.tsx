@@ -1,25 +1,11 @@
 "use client"
 import { useFavoriteMovies } from "../zustand/States"
-import { useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import Favorite from "../components/Favorite"
 
 export default function Favorites() {
-  const { favoritesArray, setFavoritesArray } = useFavoriteMovies()
-
-  //this useeffect runs once the component mounts and sets the favoritesArray to the contents in local storage
-  useEffect(() => {
-    const storedFavorites = localStorage.getItem("movieFavorites")
-    if (storedFavorites) {
-      setFavoritesArray(JSON.parse(storedFavorites))
-    }
-  }, [])
-
-  //this ensures to always overwrite the previous local storage value with the new instance of the favoritesArray as it changes
-  useEffect(() => {
-    localStorage.setItem("movieFavorites", JSON.stringify(favoritesArray))
-  }, [favoritesArray])
+  const { favoritesArray } = useFavoriteMovies()
 
   // Function to construct TMDb image URL
   const getImageUrl = (path: string, size = "w500") => {

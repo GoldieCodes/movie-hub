@@ -8,6 +8,7 @@ export default function Favorite({ movie }: { movie: PopularMoviesData }) {
 
   //isFavorite checks whether the movie id passed to it is in the favoritesArray or not
   function isFavorite(movieId: number) {
+    if (!Array.isArray(favoritesArray)) return false
     return favoritesArray.some((movie) => movie.id === movieId)
   }
   const favoriteMovie = isFavorite(movie.id) //boolean variable that stores the result of the isFavorite checker function
