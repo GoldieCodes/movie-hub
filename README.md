@@ -1,6 +1,3 @@
-Here’s the writeup adjusted for professionalism and alignment with standard industry practices for README.md files:
-
-````markdown
 # 🎥 Movie Hub
 
 **Movie Hub** is a modern, responsive web application that allows users to browse, search, and explore popular movies using The Movie Database (TMDb) API. The application features an intuitive interface for discovering films, viewing detailed movie information, and managing a personal collection of favorite movies.
