@@ -21,7 +21,7 @@ export default function Nav() {
         <span className="w-[60%]">
           <Link
             href="/favorites"
-            className="hover:text-blue-900 flex items-center justify-end gap-2 text-lg"
+            className="hover:text-blue-900 flex items-center justify-end gap-2 lg:text-lg"
           >
             <span className="text-blue-800">
               <FaHeart />
